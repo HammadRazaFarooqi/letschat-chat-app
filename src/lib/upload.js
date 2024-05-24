@@ -22,8 +22,7 @@ const upload = async (file) => {
       "state_changed",
       (snapshot) => {
         // Calculate and log the progress of the upload
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+       
 
         // Handle different states of the upload task
         

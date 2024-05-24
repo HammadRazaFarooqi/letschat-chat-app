@@ -13,6 +13,7 @@ function Login() {
     const { email, password } = Object.fromEntries(formData);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
+      console.log(response)
       toast.success("User Login Successfully")
       navigate('/Chat');
 
