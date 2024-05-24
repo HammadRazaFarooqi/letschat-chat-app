@@ -11,15 +11,12 @@ function Login() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const { email, password } = Object.fromEntries(formData);
-    console.log(email, password);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log("User login successfully:", response.user);
       toast.success("User Login Successfully")
       navigate('/Chat');
 
     } catch (error) {
-      console.error("Login error:", error);
       toast.error(error.messsage);
     }
   };

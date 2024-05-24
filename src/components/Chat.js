@@ -45,7 +45,6 @@ function Chat() {
 
   useEffect(() => {
     if (chatId) {
-      console.log("chatId", chatId);
       const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
         setChat(res.data());
       });
@@ -113,7 +112,7 @@ function Chat() {
 
       setText("");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -133,7 +132,7 @@ function Chat() {
         messages: updatedMessages,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

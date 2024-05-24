@@ -19,8 +19,7 @@ function App() {
   // const { currentUser } = useUserData();
   const [lastMessage, setLastMessage] = useState();
   const { currentUser, fetchUserInfo } = useUserStore();
-  const [details, setDetails] = useState(false);
-  const [groupDetails, setGroupDetails] = useState(false);
+ 
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
       fetchUserInfo(user?.uid);

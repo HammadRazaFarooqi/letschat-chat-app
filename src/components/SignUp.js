@@ -25,7 +25,6 @@ function SignUp() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const { username, email, password } = Object.fromEntries(formData);
-    console.log(username, email, password);
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -33,7 +32,6 @@ function SignUp() {
         password
       );
       const imgUrl=await upload(avatar.file)
-      console.log("User registered successfully:", response.user);
       await setDoc(doc(db, "users", response.user.uid), {
         username,
         email,

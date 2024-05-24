@@ -21,7 +21,6 @@ function ChatsAndGroups() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
   const [createGroups, setCeateGroups] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
   const [group, setGroup] = useState(null);
   const [avatar, setAvatar] = useState({
     groupImg: null,
@@ -65,7 +64,6 @@ function ChatsAndGroups() {
         groupId: newGroupRef.id,
         groupName: groupName,
         avatar: groupImgUrl,
-        private: isPrivate,
         lastMessage: "",
         lastMessageSender: "",
         createdBy: currentUser.id,
@@ -80,7 +78,6 @@ function ChatsAndGroups() {
           groupId: newGroupRef.id,
           groupName: groupName,
           avatar: groupImgUrl,
-          private: isPrivate,
           lastMessage: "",
           lastMessageSender: "",
           createdBy: currentUser.id,
@@ -98,7 +95,6 @@ function ChatsAndGroups() {
       e.target.reset(); // Clear form input fields
       //   setCreateGroupLoading(false);
     } catch (err) {
-      console.log(err);
       toast.error("Error creating group");
     }
   };
@@ -141,7 +137,6 @@ function ChatsAndGroups() {
       }
       setGroup(results[0].matchingGroups[0]);
     } catch (err) {
-      console.log(err);
       toast.error("Error finding group");
     }
   };
@@ -213,7 +208,6 @@ function ChatsAndGroups() {
       toast.success("Group joined successfully");
       //   setJoinGroupLoading(false);
     } catch (err) {
-      console.log(err);
       toast.error("Error joining group");
     }
   };
