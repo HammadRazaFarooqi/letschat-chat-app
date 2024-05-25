@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { useChatStore } from "../lib/chatStore";
 
 const Groups = ({ setDetails }) => {
-    const { chatId, user } = useChatStore();
+  const { chatId, user } = useChatStore();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [group, setGroup] = useState();
@@ -69,7 +69,6 @@ const Groups = ({ setDetails }) => {
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group?.messages]);
 
   const fetchUserAvatar = async (userId) => {
@@ -97,7 +96,9 @@ const Groups = ({ setDetails }) => {
   };
 
   const handleEmoji = (e) => {
-    setMessage(message + e.emoji);
+    // setMessage(message + e.emoji);
+    setText((prev) => prev + e.emoji);
+    setOpen(false);
   };
 
   const handleSend = async (e) => {
@@ -105,11 +106,11 @@ const Groups = ({ setDetails }) => {
     console.log("Basic log message1");
     e.preventDefault();
     if (!text.trim() && !img.image) {
-        return;
+      return;
     }
     console.log("Basic log message");
     let imgUrl = null;
-    
+
     try {
       if (img.image) {
         imgUrl = await upload(img.image);
@@ -366,51 +367,73 @@ const Groups = ({ setDetails }) => {
         <div className="flex flex-col h-full overflow-x-auto mb-4">
           <div className="flex flex-col h-full">
             <div className="grid grid-cols-12 gap-y-2">
-            {group?.messages?.length ? (
-  group.messages.map((message, index) => {
-    const senderId = message.senderId;
-    const senderName = senderId === currentUser?.id ? currentUser.username : (usernames[senderId] || "Loading...");
-    const senderAvatar = senderId === currentUser?.id ? newAvatar : (userAvatars[senderId] || Avatar);
+              {group?.messages?.length ? (
+                group.messages.map((message, index) => {
+                  const senderId = message.senderId;
+                  const senderName =
+                    senderId === currentUser?.id
+                      ? currentUser.username
+                      : usernames[senderId] || "Loading...";
+                  const senderAvatar =
+                    senderId === currentUser?.id
+                      ? newAvatar
+                      : userAvatars[senderId] || Avatar;
 
-    return (
-      <div key={index} className={`col-span-12 p-3 rounded-lg ${message.senderId === currentUser?.id ? "flex justify-end" : "flex justify-start"}`}>
-        <div>
-          <div className={`relative ${message.senderId === currentUser?.id ? "bg-indigo-100" : "bg-white"} py-2 px-4 shadow rounded-xl`}>
-            <div className="flex items-center mb-1 ">
-              <img src={senderAvatar} alt="Avatar" className="w-6 h-6 rounded-full mr-2" />
-              <strong className="text-sm ">{senderName}</strong>
-            </div>
-            <p className="text-sm">{message.text}</p>
-          </div>
-          <p className="text-xs text-gray-500 mt-1 text-end">
-            {message.createdAt?.toDate().toLocaleString()}
-          </p>
-        </div>
-      </div>
-    );
-  })
-) : (
-  <div className="flex justify-between items-center h-full text-gray-500 ml-96 mt-28">
-    <div className="flex items-center justify-center rounded-2xl text-indigo-700 bg-indigo-100 h-10 w-10 mx-5">
-      <svg
-        className="w-10 h-10"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-        ></path>
-      </svg>
-    </div>
-    <div className="flex font-bold text-2xl">Let's Chat</div>
-  </div>
-)}
-
+                  return (
+                    <div
+                      key={index}
+                      className={`col-span-12 p-3 rounded-lg ${
+                        message.senderId === currentUser?.id
+                          ? "flex justify-end"
+                          : "flex justify-start"
+                      }`}
+                    >
+                      <div>
+                        <div
+                          className={`relative ${
+                            message.senderId === currentUser?.id
+                              ? "bg-indigo-100"
+                              : "bg-white"
+                          } py-2 px-4 shadow rounded-xl`}
+                        >
+                          <div className="flex items-center mb-1 ">
+                            <img
+                              src={senderAvatar}
+                              alt="Avatar"
+                              className="w-6 h-6 rounded-full mr-2"
+                            />
+                            <strong className="text-sm ">{senderName}</strong>
+                          </div>
+                          <p className="text-sm">{message.text}</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 text-end">
+                          {message.createdAt?.toDate().toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex justify-between items-center h-full text-gray-500 ml-96 mt-28">
+                  <div className="flex items-center justify-center rounded-2xl text-indigo-700 bg-indigo-100 h-10 w-10 mx-5">
+                    <svg
+                      className="w-10 h-10"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div className="flex font-bold text-2xl">Let's Chat</div>
+                </div>
+              )}
             </div>
           </div>
         </div>

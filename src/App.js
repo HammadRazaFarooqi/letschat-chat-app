@@ -123,32 +123,38 @@ function App() {
     }
   }, [lastMessage, currentUser]);
   useEffect(() => {
-    if(currentUser) {
-    if (!("Notification" in window)) {
-      alert("This browser does not support desktop notifications");
-      return;
-    }
+    if (!currentUser) return;
 
-    const permission = Notification.permission;
-    if (permission !== "granted") {
-      Notification.requestPermission();
-    }
+    const requestNotificationPermission = async () => {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications");
+        return;
+      }
 
-    if (permission === "granted") {
-      const fetchGroups = async () => {
+      let permission = Notification.permission;
+      if (permission !== "granted") {
+        permission = await Notification.requestPermission();
+      }
+
+      return permission === "granted";
+    };
+
+    const fetchGroups = async () => {
+      try {
         const querySnapshot = await getDocs(collection(db, "groups"));
-        querySnapshot.forEach((res) => {
+        querySnapshot.forEach(async (res) => {
           const groupData = res.data();
-            const newGroupId = res.id;
+          const newGroupId = res.id;
           const lastMsg = groupData.lastMessage;
-          const senderId = groupData.lastMessageSender;;
+          const senderId = groupData.lastMessageSender;
           const groupMembers = groupData.members;
 
           if (senderId) {
-            groupMembers.forEach(async (member) => {
+            for (const member of groupMembers) {
               const userDoc = await getDoc(doc(db, "users", member));
               const senderDoc = await getDoc(doc(db, "users", senderId));
-                const senderData = senderDoc.data();
+              const senderData = senderDoc.data();
+
               if (userDoc.exists()) {
                 const usersData = userDoc.data();
 
@@ -158,15 +164,12 @@ function App() {
                     const userGroupsData = checkDoc.data();
                     const userGroups = userGroupsData.groups;
 
-                    userGroups.forEach(async (userGroup) => {
-                        if(userGroup.isSeen === false) {
-                      if (userGroup.groupId === newGroupId) {
-                        const group = { user: usersData, ...userGroup };
-
+                    for (const userGroup of userGroups) {
+                      if (!userGroup.isSeen && userGroup.groupId === newGroupId) {
                         if (lastMsg) {
-                          const notification = new Notification(`${group.groupName}`, {
+                          const notification = new Notification(`${userGroup.groupName}`, {
                             body: `${senderData.username}: ${lastMsg}`,
-                            icon: `${userGroup.avatar || Avatar}`,
+                            icon: userGroup.avatar || Avatar,
                             tag: senderData.id,
                           });
 
@@ -177,27 +180,35 @@ function App() {
                         }
                       }
                     }
-                    });
                   }
                 }
               }
-            });
+            }
           }
         });
-      };
+      } catch (error) {
+        console.error("Error fetching groups: ", error);
+      }
+    };
 
-      fetchGroups();
+    const initNotifications = async () => {
+      const permissionGranted = await requestNotificationPermission();
+      if (permissionGranted) {
+        await fetchGroups();
 
-      // Subscribe to new messages
-      const unsubscribe = onSnapshot(collection(db, "groups"), () => {
-        fetchGroups();
-      });
+        // Subscribe to new messages
+        const unsubscribe = onSnapshot(collection(db, "groups"), () => {
+          fetchGroups();
+        });
 
-      return () => {
-        unsubscribe();
-      };
-    }
-    }
+        return () => {
+          unsubscribe();
+        };
+      }
+    };
+
+    initNotifications();
+
     // eslint-disable-next-line 
   }, [currentUser]);
 

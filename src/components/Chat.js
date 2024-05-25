@@ -31,9 +31,7 @@ function Chat() {
   const [newAvatar, setNewAvatar] = useState(currentUser?.avatar);
   const endRef = useRef(null);
 
-  const handleButtonClick = () => {
-    setShowUserInfo(!showUserInfo);
-  };
+  
   const handleLogout = () => {
     navigate("/");
     toast.success("Logout Successfully");
@@ -180,7 +178,7 @@ function Chat() {
   // };
 
   return (
-    <div className="flex flex-col flex-auto h-full p-6 ">
+    <div className="flex flex-col flex-auto h-full p-6">
       <div className="flex justify-between relative">
         <span>
           <button className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
@@ -197,7 +195,7 @@ function Chat() {
         <span className="relative">
           <button
             className="flex items-center justify-center hover:bg-gray-100 rounded-xl py-4 relative"
-            onClick={handleButtonClick}
+            onClick={() => setShowUserInfo(!showUserInfo)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -215,8 +213,7 @@ function Chat() {
             </svg>
           </button>
           {showUserInfo && (
-            <div className="absolute flex flex-col items-center bg-indigo-100 border border-gray-200 mt-2 w-56 py-6 px-4 rounded-lg -ml-48 z-40">
-              {editing ? (
+            <div className="absolute flex flex-col items-center bg-indigo-100 border border-gray-200 mt-2 w-56 py-6 px-4 rounded-lg -ml-48 z-40">{editing ? (
                 <>
                   <div className="h-20 w-20 rounded-full border overflow-hidden">
                     <img
@@ -327,8 +324,8 @@ function Chat() {
       </div>
 
       {
-        <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-5/6 p-4">
-          <div className="flex flex-col h-full overflow-x-auto mb-4">
+      <div className="flex flex-col flex-auto flex-shrink-0 rounded-2xl bg-gray-100 h-5/6 p-4">
+      <div className="flex flex-col h-full overflow-x-auto mb-4">
             <div className="flex flex-col h-full">
               <div className="grid grid-cols-12 gap-y-2">
                 {chat?.messages?.length ? (

@@ -143,7 +143,6 @@ function ChatsAndGroups() {
     } catch (err) {
       console.log(err);
       toast.error("Error finding group");
-      console.log(err)
     }
   };
 
@@ -163,13 +162,10 @@ function ChatsAndGroups() {
 
       const userGroupsRef = doc(db, "usergroups", currentUser.id);
       const groupRef = doc(db, "groups", group.groupId);
-      console.log(userGroupsRef)
-      console.log(groupRef)
 
       await updateDoc(groupRef, {
         members: arrayUnion(currentUser.id),
       });
-      console.log("check",updateDoc)
 
       await updateDoc(userGroupsRef, {
         groups: arrayUnion({
@@ -184,19 +180,7 @@ function ChatsAndGroups() {
           updatedAt: Date.now(),
         }),
       });
-console.log({
-  groups: arrayUnion({
-    groupId: group.groupId,
-    groupName: group.groupName,
-    avatar: group.avatar,
-    private: group.private,
-    lastMessage: "",
-    lastMessageSender: "",
-    createdBy: group.createdBy,
-    members: [...group.members, currentUser.id],
-    updatedAt: Date.now(),
-  }),
-})
+
       for (const memberId of group.members) {
         const memberRef = doc(db, "usergroups", memberId);
         const memberSnap = await getDoc(memberRef);
@@ -231,7 +215,6 @@ console.log({
     } catch (err) {
       console.log(err);
       toast.error("Error joining group");
-      console.error("Error updating document:", err.message);
     }
   };
 

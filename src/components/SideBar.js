@@ -7,8 +7,7 @@ import { useUserStore } from "../lib/userStore";
 import ChatsAndGroups from "./ChatsAndGroups";
 import Avatar from "./avatar.png";
 
-function SideBar() {
-  const [showAddUser, setShowAddUser] = useState(false);
+function SideBar({ onChatClick }) {
   const [showChatsAndGroups, setShowChatsAndGroups] = useState(false);
   const [chats, setChats] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -18,9 +17,8 @@ function SideBar() {
   const { currentUser } = useUserStore();
   const { changeChat, resetChat } = useChatStore();
   const { changeGroup, resetGroup } = useGroupData();
-  const toggleAddUser = () => {
-    setShowAddUser(!showAddUser);
-  };
+  
+ 
 
   const toggleChatsAndGroups = () => {
     setShowChatsAndGroups(!showChatsAndGroups);
@@ -112,27 +110,26 @@ function SideBar() {
   }
 
   return (
-    <div className="border-r-4">
-      <div className="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0 h-4/6">
+    <div className="border-r-4 h-full flex flex-col">
+      <div className="py-8 pl-6 pr-2 bg-white flex-shrink-0">
         <div className="flex flex-row items-start justify-start h-12 w-full mb-18 -mt-4">
           <div className="flex items-center justify-center rounded-2xl text-indigo-700 bg-indigo-100 h-10 w-10">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-              ></path>
-            </svg>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                ></path>
+              </svg>
           </div>
           <div className="ml-2 font-bold text-2xl ">Let's Chat</div>
-          
         </div>
 
         {showChatsAndGroups && <ChatsAndGroups />}
@@ -165,7 +162,7 @@ function SideBar() {
         <div className="flex flex-col mb-10 h-96">
           <div className="flex justify-around items-center mt-3 bg-gray-100 rounded-md border-1 shadow-md w-auto py-3">
             <button
-              className={`text-xs py-1  flex flex-row items-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-2 flex-shrink-0 ${
+              className={`text-xs py-1 flex flex-row items-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-2 flex-shrink-0 ${
                 activeTab === "Chats" ? "active" : ""
               }`}
               onClick={() => setSelectedTab("Chats")}
@@ -173,7 +170,7 @@ function SideBar() {
               Chats
             </button>
             <button
-              className={`text-xs py-1  flex flex-row items-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-2 flex-shrink-0 ${
+              className={`text-xs py-1 flex flex-row items-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-2 flex-shrink-0 ${
                 activeTab === "Groups" ? "active" : ""
               }`}
               onClick={() => setSelectedTab("Groups")}
@@ -189,14 +186,17 @@ function SideBar() {
             </span>
           </div>
 
-          <div className="flex flex-col space-y-1 mt-4 h-screen overflow-y-auto bg-gray-100 rounded-md border-1 shadow-md w-auto py-3">
+          <div className="flex flex-col space-y-1 mt-4 h-full overflow-y-auto bg-gray-100 rounded-md border-1 shadow-md w-auto py-3">
             {activeTab === "Chats" &&
               filteredChats.map(
                 (chat) =>
                   chat.user && (
                     <div key={chat.chatId}>
                       <button
-                        onClick={() => handleSelect(chat)}
+                        onClick={() => {
+                          handleSelect(chat);
+                          onChatClick();
+                        }}
                         className={`flex flex-row items-center rounded-xl p-2 w-full border-y-2 ${
                           chat.isSeen
                             ? "hover:bg-gray-100 bg-transparent text-inherit"
@@ -222,7 +222,10 @@ function SideBar() {
               filteredGroups.map((group) => (
                 <div key={group.groupId}>
                   <button
-                    onClick={() => handleGroupSelect(group)}
+                    onClick={() => {
+                      handleGroupSelect(group);
+                      onChatClick();
+                    }}
                     className={`flex flex-row items-center rounded-xl p-2 w-full ${
                       group.isSeen
                         ? "hover:bg-gray-100 bg-transparent text-inherit"
