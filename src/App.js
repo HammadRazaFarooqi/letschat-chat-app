@@ -19,7 +19,8 @@ function App() {
   // const { currentUser } = useUserData();
   const [lastMessage, setLastMessage] = useState();
   const { currentUser, fetchUserInfo } = useUserStore();
- 
+  const [details, setDetails] = useState(false);
+  const [groupDetails, setGroupDetails] = useState(false);
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
       fetchUserInfo(user?.uid);
@@ -121,7 +122,84 @@ function App() {
       }
     }
   }, [lastMessage, currentUser]);
-  
+  useEffect(() => {
+    if(currentUser) {
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notifications");
+      return;
+    }
+
+    const permission = Notification.permission;
+    if (permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    if (permission === "granted") {
+      const fetchGroups = async () => {
+        const querySnapshot = await getDocs(collection(db, "groups"));
+        querySnapshot.forEach((res) => {
+          const groupData = res.data();
+            const newGroupId = res.id;
+          const lastMsg = groupData.lastMessage;
+          const senderId = groupData.lastMessageSender;;
+          const groupMembers = groupData.members;
+
+          if (senderId) {
+            groupMembers.forEach(async (member) => {
+              const userDoc = await getDoc(doc(db, "users", member));
+              const senderDoc = await getDoc(doc(db, "users", senderId));
+                const senderData = senderDoc.data();
+              if (userDoc.exists()) {
+                const usersData = userDoc.data();
+
+                if (senderId !== currentUser?.id) {
+                  const checkDoc = await getDoc(doc(db, "usergroups", member));
+                  if (checkDoc.exists()) {
+                    const userGroupsData = checkDoc.data();
+                    const userGroups = userGroupsData.groups;
+
+                    userGroups.forEach(async (userGroup) => {
+                        if(userGroup.isSeen === false) {
+                      if (userGroup.groupId === newGroupId) {
+                        const group = { user: usersData, ...userGroup };
+
+                        if (lastMsg) {
+                          const notification = new Notification(`${group.groupName}`, {
+                            body: `${senderData.username}: ${lastMsg}`,
+                            icon: `${userGroup.avatar || Avatar}`,
+                            tag: senderData.id,
+                          });
+
+                          notification.onclick = () => {
+                            window.focus();
+                            notification.close();
+                          };
+                        }
+                      }
+                    }
+                    });
+                  }
+                }
+              }
+            });
+          }
+        });
+      };
+
+      fetchGroups();
+
+      // Subscribe to new messages
+      const unsubscribe = onSnapshot(collection(db, "groups"), () => {
+        fetchGroups();
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+    }
+    // eslint-disable-next-line 
+  }, [currentUser]);
 
   return (
     <div className="App">

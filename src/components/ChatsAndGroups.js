@@ -21,6 +21,7 @@ function ChatsAndGroups() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
   const [createGroups, setCeateGroups] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [group, setGroup] = useState(null);
   const [avatar, setAvatar] = useState({
     groupImg: null,
@@ -64,6 +65,7 @@ function ChatsAndGroups() {
         groupId: newGroupRef.id,
         groupName: groupName,
         avatar: groupImgUrl,
+        private: isPrivate,
         lastMessage: "",
         lastMessageSender: "",
         createdBy: currentUser.id,
@@ -78,6 +80,7 @@ function ChatsAndGroups() {
           groupId: newGroupRef.id,
           groupName: groupName,
           avatar: groupImgUrl,
+          private: isPrivate,
           lastMessage: "",
           lastMessageSender: "",
           createdBy: currentUser.id,
@@ -95,6 +98,7 @@ function ChatsAndGroups() {
       e.target.reset(); // Clear form input fields
       //   setCreateGroupLoading(false);
     } catch (err) {
+      console.log(err);
       toast.error("Error creating group");
     }
   };
@@ -137,8 +141,8 @@ function ChatsAndGroups() {
       }
       setGroup(results[0].matchingGroups[0]);
     } catch (err) {
+      console.log(err);
       toast.error("Error finding group");
-      console.log(err)
     }
   };
 
@@ -158,13 +162,10 @@ function ChatsAndGroups() {
 
       const userGroupsRef = doc(db, "usergroups", currentUser.id);
       const groupRef = doc(db, "groups", group.groupId);
-      console.log(userGroupsRef)
-      console.log(groupRef)
 
       await updateDoc(groupRef, {
         members: arrayUnion(currentUser.id),
       });
-      console.log("check",updateDoc)
 
       await updateDoc(userGroupsRef, {
         groups: arrayUnion({
@@ -179,19 +180,7 @@ function ChatsAndGroups() {
           updatedAt: Date.now(),
         }),
       });
-console.log({
-  groups: arrayUnion({
-    groupId: group.groupId,
-    groupName: group.groupName,
-    avatar: group.avatar,
-    private: group.private,
-    lastMessage: "",
-    lastMessageSender: "",
-    createdBy: group.createdBy,
-    members: [...group.members, currentUser.id],
-    updatedAt: Date.now(),
-  }),
-})
+
       for (const memberId of group.members) {
         const memberRef = doc(db, "usergroups", memberId);
         const memberSnap = await getDoc(memberRef);
@@ -224,8 +213,8 @@ console.log({
       toast.success("Group joined successfully");
       //   setJoinGroupLoading(false);
     } catch (err) {
+      console.log(err);
       toast.error("Error joining group");
-      console.error("Error updating document:", err.message);
     }
   };
 

@@ -7,28 +7,34 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { db } from "../lib/firebase";
 import { useGroupData } from "../lib/groupData";
 import upload from "../lib/upload";
 import { useUserStore } from "../lib/userStore";
 import Avatar from "./avatar.png";
+import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useChatStore } from "../lib/chatStore";
 
 const Groups = ({ setDetails }) => {
+    const { chatId, user } = useChatStore();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [group, setGroup] = useState();
- 
+  const [editMessage, setEditMessage] = useState("");
+  const [senderId, setSenderId] = useState();
+  const [currentId, setCurrentId] = useState();
+  const [sender, setSender] = useState();
   const [text, setText] = useState("");
   const [img, setImg] = useState({
     image: null,
     url: "",
   });
   const { currentUser } = useUserStore();
-  const { groupId } = useGroupData();
+  const { groupId, groupName, avatar } = useGroupData();
   //   const endRef = useRef(null);
-
+  const [editIndex, setEditIndex] = useState(null);
+  const [deleteIndex, setDeleteIndex] = useState(null);
 
   // State to store user avatars and usernames
   const [userAvatars, setUserAvatars] = useState({});
@@ -36,6 +42,7 @@ const Groups = ({ setDetails }) => {
   const [newAvatar, setNewAvatar] = useState(currentUser?.avatar);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [profileEdit, setProfileEdit] = useState(false);
   const [newUsername, setNewUsername] = useState(currentUser?.username);
   const navigate = useNavigate();
@@ -47,6 +54,7 @@ const Groups = ({ setDetails }) => {
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "groups", groupId), (res) => {
       setGroup(res.data());
+      console.log("first", res.data());
     });
 
     return () => unSub();
@@ -61,7 +69,6 @@ const Groups = ({ setDetails }) => {
         }
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group?.messages]);
 
   const fetchUserAvatar = async (userId) => {
@@ -93,16 +100,25 @@ const Groups = ({ setDetails }) => {
   };
 
   const handleSend = async (e) => {
+    console.log(e);
+    console.log("Basic log message1");
     e.preventDefault();
     if (!text.trim() && !img.image) {
         return;
     }
+    console.log("Basic log message");
     let imgUrl = null;
     
     try {
       if (img.image) {
         imgUrl = await upload(img.image);
       }
+      console.log(";;;", {
+        senderId: currentUser?.id,
+        ...(text && { text: text.trim() }),
+        createdAt: new Date(),
+        ...(imgUrl && { img: imgUrl }),
+      });
       await updateDoc(doc(db, "groups", groupId), {
         lastMessage: text,
         lastMessageSender: currentUser?.id,
@@ -144,12 +160,24 @@ const Groups = ({ setDetails }) => {
       setImg({ image: null, url: "" });
       setText("");
     } catch (err) {
+      console.log(err);
     }
   };
 
-  
+  const handleEdit = (index, msg) => {
+    setEditIndex(index);
+    setEditMessage(msg.text);
+  };
 
-  
+  const handleDelete = async (index, sender, currentUser) => {
+    if (sender && currentUser) {
+      setDeleteIndex(index);
+      setSenderId(sender);
+      setCurrentId(currentUser);
+    } else {
+      console.error("Sender or currentUser is null:", sender, currentUser);
+    }
+  };
   const handleButtonClick = () => {
     setShowUserInfo(!showUserInfo);
   };
@@ -448,7 +476,7 @@ const Groups = ({ setDetails }) => {
               onClick={handleSend}
               className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0"
             >
-              <span>Sendaa</span>
+              <span>Send</span>
               <span className="ml-2">
                 <svg
                   className="w-4 h-4 transform rotate-45 -mt-px"

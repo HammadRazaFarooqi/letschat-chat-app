@@ -41,6 +41,7 @@ function AddNewUser() {
         setError("No user found with that username");
       }
     } catch (error) {
+      console.log(error);
       setError("Error searching for user");
     }
   };
@@ -84,6 +85,7 @@ function AddNewUser() {
       setUser(null);
       setUsername('')
     } catch (err) {
+      console.log(err);
     }
   }
   

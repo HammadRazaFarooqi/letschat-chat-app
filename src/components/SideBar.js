@@ -8,6 +8,7 @@ import ChatsAndGroups from "./ChatsAndGroups";
 import Avatar from "./avatar.png";
 
 function SideBar() {
+  const [showAddUser, setShowAddUser] = useState(false);
   const [showChatsAndGroups, setShowChatsAndGroups] = useState(false);
   const [chats, setChats] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -17,6 +18,9 @@ function SideBar() {
   const { currentUser } = useUserStore();
   const { changeChat, resetChat } = useChatStore();
   const { changeGroup, resetGroup } = useGroupData();
+  const toggleAddUser = () => {
+    setShowAddUser(!showAddUser);
+  };
 
   const toggleChatsAndGroups = () => {
     setShowChatsAndGroups(!showChatsAndGroups);
@@ -73,7 +77,9 @@ function SideBar() {
     try {
       await updateDoc(userChatsRef, { chats: userChats });
       changeChat(chat.chatId, chat.user);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleGroupSelect = async (group) => {
@@ -86,7 +92,9 @@ function SideBar() {
     try {
       await updateDoc(userGroupsRef, { groups: userGroups });
       changeGroup(group.groupId, group.groupName, group.avatar);
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const filteredChats = chats.filter((chat) =>
@@ -124,6 +132,7 @@ function SideBar() {
             </svg>
           </div>
           <div className="ml-2 font-bold text-2xl ">Let's Chat</div>
+          
         </div>
 
         {showChatsAndGroups && <ChatsAndGroups />}
