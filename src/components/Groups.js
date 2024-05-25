@@ -69,6 +69,7 @@ const Groups = ({ setDetails }) => {
         }
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group?.messages]);
 
   const fetchUserAvatar = async (userId) => {
