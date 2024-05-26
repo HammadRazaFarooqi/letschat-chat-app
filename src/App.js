@@ -19,8 +19,8 @@ function App() {
   // const { currentUser } = useUserData();
   const [lastMessage, setLastMessage] = useState();
   const { currentUser, fetchUserInfo } = useUserStore();
-  const [details, setDetails] = useState(false);
-  const [groupDetails, setGroupDetails] = useState(false);
+  // const [details, setDetails] = useState(false);
+  // const [groupDetails, setGroupDetails] = useState(false);
   useEffect(() => {
     const unSub = onAuthStateChanged(auth, (user) => {
       fetchUserInfo(user?.uid);
@@ -156,7 +156,9 @@ function App() {
               const senderData = senderDoc.data();
 
               if (userDoc.exists()) {
+                // eslint-disable-next-line no-unused-vars
                 const usersData = userDoc.data();
+                
 
                 if (senderId !== currentUser?.id) {
                   const checkDoc = await getDoc(doc(db, "usergroups", member));
