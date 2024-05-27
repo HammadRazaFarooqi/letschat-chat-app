@@ -7,34 +7,28 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { db } from "../lib/firebase";
 import { useGroupData } from "../lib/groupData";
 import upload from "../lib/upload";
 import { useUserStore } from "../lib/userStore";
 import Avatar from "./avatar.png";
-import { Navigate, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useChatStore } from "../lib/chatStore";
 
 const Groups = ({ setDetails }) => {
-  const { chatId, user } = useChatStore();
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [message, setMessage] = useState("");
   const [group, setGroup] = useState();
-  const [editMessage, setEditMessage] = useState("");
-  const [senderId, setSenderId] = useState();
-  const [currentId, setCurrentId] = useState();
-  const [sender, setSender] = useState();
+ 
   const [text, setText] = useState("");
   const [img, setImg] = useState({
     image: null,
     url: "",
   });
   const { currentUser } = useUserStore();
-  const { groupId, groupName, avatar } = useGroupData();
+  const { groupId } = useGroupData();
   //   const endRef = useRef(null);
-  const [editIndex, setEditIndex] = useState(null);
-  const [deleteIndex, setDeleteIndex] = useState(null);
 
   // State to store user avatars and usernames
   const [userAvatars, setUserAvatars] = useState({});
@@ -42,7 +36,6 @@ const Groups = ({ setDetails }) => {
   const [newAvatar, setNewAvatar] = useState(currentUser?.avatar);
   const [showUserInfo, setShowUserInfo] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [profileEdit, setProfileEdit] = useState(false);
   const [newUsername, setNewUsername] = useState(currentUser?.username);
   const navigate = useNavigate();
@@ -69,6 +62,7 @@ const Groups = ({ setDetails }) => {
         }
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group?.messages]);
 
   const fetchUserAvatar = async (userId) => {
@@ -166,20 +160,9 @@ const Groups = ({ setDetails }) => {
     }
   };
 
-  const handleEdit = (index, msg) => {
-    setEditIndex(index);
-    setEditMessage(msg.text);
-  };
+  
 
-  const handleDelete = async (index, sender, currentUser) => {
-    if (sender && currentUser) {
-      setDeleteIndex(index);
-      setSenderId(sender);
-      setCurrentId(currentUser);
-    } else {
-      console.error("Sender or currentUser is null:", sender, currentUser);
-    }
-  };
+ 
   const handleButtonClick = () => {
     setShowUserInfo(!showUserInfo);
   };

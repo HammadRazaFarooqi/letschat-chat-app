@@ -21,6 +21,7 @@ function ChatsAndGroups() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showGroups, setShowGroups] = useState(false);
   const [createGroups, setCeateGroups] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [isPrivate, setIsPrivate] = useState(false);
   const [group, setGroup] = useState(null);
   const [avatar, setAvatar] = useState({
